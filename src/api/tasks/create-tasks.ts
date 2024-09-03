@@ -2,16 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { type ZodObject, z } from 'zod'
 import { db } from '../../database/db'
-
-interface Task {
-	id: string
-	title: string
-	description: string
-	session_id: string
-	completed_at: string | null
-	created_at: string
-	updated_at: string
-}
+import type { Task } from '../tasks/route'
 
 export async function createTasks(req: FastifyRequest, res: FastifyReply) {
 	try {

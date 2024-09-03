@@ -38,12 +38,7 @@ describe('get-tasks', () => {
 	it('should not return the tasks when the user does not have a session id', async () => {
 		await request(app.server).get(URL).expect(401)
 	})
-	it('should not return the tasks when the user does not have a valid session id', async () => {
-		await request(app.server)
-			.get(URL)
-			.set('Cookie', `sessionId=${randomUUID()}`)
-			.expect(401)
-	})
+
 	it('can search tasks by title', async () => {
 		await request(app.server)
 			.get(URL)

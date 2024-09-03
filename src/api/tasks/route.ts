@@ -1,21 +1,28 @@
 import type { FastifyInstance } from 'fastify'
 import { createTasks } from './create-tasks'
+import { getTasks } from './get-tasks'
 
 interface Response<D> {
 	message?: string
 	data?: D
 }
 
-interface Task {
+export interface Task {
+	id: string
+	session_id: string
 	title: string
 	description: string
-	completedAt: string | null
-	createdAt: string
-	updatedAt: string
+	completed_at: string | null
+	created_at: string
+	updated_at: string
 }
 
 export async function tasksRoute(app: FastifyInstance) {
 	app.post<{
 		Reply: Response<Task>
 	}>('/', createTasks)
+
+	app.get<{
+		Reply: Response<Task[]>
+	}>('/', getTasks)
 }

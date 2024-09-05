@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import { createTasks } from './create-tasks'
 import { getTasks } from './get-tasks'
+import { updateTasks } from './update-tasks'
 
 interface Response<D> {
 	message?: string
@@ -25,4 +26,8 @@ export async function tasksRoute(app: FastifyInstance) {
 	app.get<{
 		Reply: Response<Task[]>
 	}>('/', getTasks)
+
+	app.put<{
+		Reply: Response<Task>
+	}>('/:id', updateTasks)
 }

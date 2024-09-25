@@ -14,11 +14,6 @@ describe('create-tasks', () => {
 		await app.close()
 	})
 
-	beforeEach(async () => {
-		execSync('npm run knex migrate:rollback --all')
-		execSync('npm run knex migrate:latest')
-	})
-
 	it('can create a task', async () => {
 		await request(app.server)
 			.post(URL)

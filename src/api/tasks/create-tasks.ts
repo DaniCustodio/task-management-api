@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { type ZodObject, z } from 'zod'
-import { db } from '../../database/db'
 import type { Task } from '../tasks/route'
+import { taskRepository } from './repository'
 
 export async function createTasks(req: FastifyRequest, res: FastifyReply) {
 	try {
@@ -23,7 +23,7 @@ export async function createTasks(req: FastifyRequest, res: FastifyReply) {
 			})
 		}
 
-		const result = await db<Task>('tasks').returning('*').insert({
+		const result = await taskRepository.createTask({
 			id: randomUUID(),
 			session_id: sessionId,
 			title,
@@ -31,7 +31,7 @@ export async function createTasks(req: FastifyRequest, res: FastifyReply) {
 		})
 
 		res.status(201)
-		res.send({ data: result[0] })
+		res.send({ data: result })
 	} catch (error) {
 		console.log(error)
 		res.status(500)

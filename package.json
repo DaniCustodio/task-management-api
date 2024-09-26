@@ -18,9 +18,10 @@
 	"license": "ISC",
 	"devDependencies": {
 		"@biomejs/biome": "1.9.2",
+		"@types/better-sqlite3": "^7.6.11",
 		"@types/node": "^22.5.2",
 		"@types/supertest": "^6.0.2",
-		"sqlite3": "^5.1.7",
+		"better-sqlite3": "^11.3.0",
 		"supertest": "^7.0.0",
 		"tsx": "^4.19.0",
 		"typescript": "^5.5.4",
@@ -30,7 +31,8 @@
 		"@fastify/cookie": "^9.4.0",
 		"dotenv": "^16.4.5",
 		"fastify": "^4.28.1",
-		"pg": "^8.12.0",
+		"kysely": "^0.27.4",
+		"pg": "^8.13.0",
 		"zod": "^3.23.8"
 	}
 }

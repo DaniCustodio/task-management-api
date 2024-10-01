@@ -1,9 +1,11 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { taskRepository } from '../repository'
-import type { Task } from '../route'
+import { TaskRepository } from '../repository'
+import { db } from '../../../database/db'
 
 export async function updateTasks(req: FastifyRequest, res: FastifyReply) {
+	const taskRepository = new TaskRepository(db)
+
 	const sessionId = req.cookies.sessionId
 	if (!sessionId) {
 		res.status(401)

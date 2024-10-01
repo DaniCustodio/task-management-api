@@ -1,9 +1,21 @@
 import cookie from '@fastify/cookie'
-import Fastify from 'fastify'
+import Fastify, { type FastifyInstance } from 'fastify'
 import { tasksRoute } from './api/tasks/route'
 
-export const app = Fastify({ logger: true })
+export const app = createApp([{ route: tasksRoute, prefix: '/api/tasks' }])
 
-app.register(cookie)
+interface Route {
+	route: (app: FastifyInstance) => void
+	prefix: string
+}
 
-app.register(tasksRoute, { prefix: '/api/tasks' })
+export function createApp(routes: Route[]) {
+	const app = Fastify({ logger: true })
+	app.register(cookie)
+
+	for (const route of routes) {
+		app.register(route.route, { prefix: route.prefix })
+	}
+
+	return app
+}

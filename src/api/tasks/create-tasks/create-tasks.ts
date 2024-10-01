@@ -1,8 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import { ZodError } from 'zod'
 import type { Task } from '../../../types'
 import type { TaskRepo } from '../repository'
-import type { CreateTask } from './schema'
+import { type CreateTask, CreateTasksSchema } from './schema'
 
 interface Response<D> {
 	message?: string
@@ -34,12 +35,12 @@ export async function createTasksRoute(
 			}
 
 			const { title, description } = req.body
-			const task: CreateTask = {
+			const task = CreateTasksSchema.parse({
 				id: randomUUID(),
 				sessionId,
 				title: title,
 				description: description,
-			}
+			})
 
 			const result = await repository.createTask(task)
 
@@ -47,6 +48,12 @@ export async function createTasksRoute(
 			res.send({ data: result })
 		} catch (error) {
 			console.log(error)
+
+			if (error instanceof ZodError) {
+				res.status(400)
+				res.send({ message: 'please provide a valid title and description' })
+			}
+
 			res.status(500)
 			res.send({ message: 'Internal server error' })
 		}

@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { db } from '../../database/db'
 import { TaskRepository } from './repository'
 
-describe('Task Repository', () => {
+describe('task-repository', () => {
 	const sut = new TaskRepository(db)
 
 	beforeAll(async () => {

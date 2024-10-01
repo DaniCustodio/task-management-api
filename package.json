@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "/dist/server.js",
+	"type": "module",
 	"engines": {
 		"node": ">=20.0.0"
 	},
@@ -11,7 +12,10 @@
 		"check": "biome check --write ./src",
 		"test": "vitest",
 		"test:coverage": "vitest run --coverage",
-		"test:ci": "vitest run"
+		"test:ci": "vitest run",
+		"migrate:latest": "kysely migrate:latest",
+		"migrate:rollback": "kysely migrate:rollback --all",
+		"seed:test": "kysely seed:run --specific=1727720540201_findBy"
 	},
 	"keywords": [],
 	"author": "Dani Custodio",
@@ -22,6 +26,7 @@
 		"@types/node": "^22.5.2",
 		"@types/supertest": "^6.0.2",
 		"better-sqlite3": "^11.3.0",
+		"kysely-ctl": "^0.9.0",
 		"supertest": "^7.0.0",
 		"tsx": "^4.19.0",
 		"typescript": "^5.5.4",

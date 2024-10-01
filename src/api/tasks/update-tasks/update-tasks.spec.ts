@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process'
 import request from 'supertest'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { app } from '../../app'
+import { app } from '../../../app'
 
 describe('update-tasks', () => {
 	const URL = '/api/tasks'

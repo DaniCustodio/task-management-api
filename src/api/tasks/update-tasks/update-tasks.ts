@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { db } from '../../database/db'
-import type { Task } from '../tasks/route'
+import { taskRepository } from '../repository'
+import type { Task } from '../route'
 
 export async function updateTasks(req: FastifyRequest, res: FastifyReply) {
 	const sessionId = req.cookies.sessionId
@@ -33,9 +33,7 @@ export async function updateTasks(req: FastifyRequest, res: FastifyReply) {
 		updateFields.description = description
 	}
 
-	const doesTheTaskExist = await db<Task>('tasks')
-		.where({ id, session_id: sessionId })
-		.first()
+	const doesTheTaskExist = await taskRepository.findTask(id, sessionId)
 
 	if (!doesTheTaskExist) {
 		res.status(404)
@@ -43,10 +41,11 @@ export async function updateTasks(req: FastifyRequest, res: FastifyReply) {
 		return
 	}
 
-	const updatedTask = await db<Task>('tasks')
-		.where({ id, session_id: sessionId })
-		.update(updateFields)
-		.returning('*')
+	const updatedTask = await taskRepository.updateTask({
+		id,
+		session_id: sessionId,
+		updateFields,
+	})
 
 	if (!updatedTask) {
 		res.status(404)
@@ -55,7 +54,7 @@ export async function updateTasks(req: FastifyRequest, res: FastifyReply) {
 	}
 
 	res.status(200)
-	res.send({ data: updatedTask[0] })
+	res.send({ data: updatedTask })
 }
 
 function validateParams(params: unknown) {

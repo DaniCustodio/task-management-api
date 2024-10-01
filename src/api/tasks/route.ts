@@ -1,27 +1,20 @@
 import type { FastifyInstance } from 'fastify'
-import { createTasks } from './create-tasks'
-import { getTasks } from './get-tasks'
-import { updateTasks } from './update-tasks'
+import { db } from '../../database/db'
+import type { Task } from '../../types'
+import { createTasksRoute } from './create-tasks/create-tasks'
+import { getTasks } from './get-tasks/get-tasks'
+import { TaskRepository } from './repository'
+import { updateTasks } from './update-tasks/update-tasks'
 
 interface Response<D> {
 	message?: string
 	data?: D
 }
 
-export interface Task {
-	id: string
-	session_id: string
-	title: string
-	description: string
-	completed_at: string | null
-	created_at: string
-	updated_at: string
-}
-
 export async function tasksRoute(app: FastifyInstance) {
-	app.post<{
-		Reply: Response<Task>
-	}>('/', createTasks)
+	const repository = new TaskRepository(db)
+
+	createTasksRoute(app, repository)
 
 	app.get<{
 		Reply: Response<Task[]>

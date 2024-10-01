@@ -1,7 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { db } from '../../database/db'
-import type { Task } from '../tasks/route'
+import { taskRepository } from '../repository'
 
 export async function getTasks(req: FastifyRequest, res: FastifyReply) {
 	try {
@@ -16,18 +15,18 @@ export async function getTasks(req: FastifyRequest, res: FastifyReply) {
 		// QUESTION: Should we do a fuzzy search?
 		const { title, description } = validateParams(req.query)
 		if (title) {
-			const tasks = await db<Task>('tasks').where({ title })
+			const tasks = await taskRepository.findByTitle(title)
 			res.status(200).send({ data: tasks })
 			return
 		}
 
 		if (description) {
-			const tasks = await db<Task>('tasks').where({ description })
+			const tasks = await taskRepository.findByDescription(description)
 			res.status(200).send({ data: tasks })
 			return
 		}
 
-		const tasks = await db<Task>('tasks').where({ session_id: sessionId })
+		const tasks = await taskRepository.findBySessionId(sessionId)
 
 		res.status(200).send({ data: tasks })
 	} catch (error) {

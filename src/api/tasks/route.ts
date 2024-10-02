@@ -1,8 +1,8 @@
 import type { FastifyInstance } from 'fastify'
 import { db } from '../../database/db'
 import type { Task } from '../../types'
-import { createTasksRoute } from './create-tasks/create-tasks'
-import { getTasks } from './get-tasks/get-tasks'
+import { createTasksRoute } from './create-tasks'
+import { getTasksRoute } from './get-tasks'
 import { TaskRepository } from './repository'
 import { updateTasks } from './update-tasks/update-tasks'
 
@@ -16,9 +16,7 @@ export async function tasksRoute(app: FastifyInstance) {
 
 	createTasksRoute(app, repository)
 
-	app.get<{
-		Reply: Response<Task[]>
-	}>('/', getTasks)
+	getTasksRoute(app, repository)
 
 	app.put<{
 		Reply: Response<Task>

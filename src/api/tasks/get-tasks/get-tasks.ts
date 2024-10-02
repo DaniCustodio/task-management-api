@@ -1,56 +1,53 @@
-import type { FastifyReply, FastifyRequest } from 'fastify'
-import { z } from 'zod'
-import { db } from '../../../database/db'
-import { TaskRepository } from '../repository'
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import type { Task } from '../../../types'
+import type { TaskRepo } from '../repository'
+import { type GetTasksParams, GetTasksParamsSchema } from './schema'
 
-export async function getTasks(req: FastifyRequest, res: FastifyReply) {
-	try {
-		const taskRepository = new TaskRepository(db)
-		const sessionId = req.cookies.sessionId
-		if (!sessionId) {
-			res.status(401)
-			res.send({ message: 'Unauthorized' })
-			return
-		}
-
-		// QUESTION: If the users sends a title and description, should we search for both?
-		// QUESTION: Should we do a fuzzy search?
-		const { title, description } = validateParams(req.query)
-		if (title) {
-			const tasks = await taskRepository.findByTitle(title, sessionId)
-			res.status(200).send({ data: tasks })
-			return
-		}
-
-		if (description) {
-			const tasks = await taskRepository.findByDescription(
-				description,
-				sessionId
-			)
-			res.status(200).send({ data: tasks })
-			return
-		}
-
-		const tasks = await taskRepository.findBySessionId(sessionId)
-
-		res.status(200).send({ data: tasks })
-	} catch (error) {
-		console.log('🚨 ERROR', error)
-		res.status(500).send({ message: 'Internal server error' })
-	}
+interface Response<D> {
+	message?: string
+	data?: D
 }
 
-function validateParams(params: unknown) {
-	try {
-		const GetTasksParamsSchema = z.object({
-			title: z.string().min(1).optional(),
-			description: z.string().min(1).optional(),
-		})
+export async function getTasksRoute(
+	app: FastifyInstance,
+	repository: TaskRepo
+) {
+	return app.get<{
+		Querystring: GetTasksParams
+		Reply: Response<Task[]>
+	}>('/', async (req, res) => {
+		try {
+			const sessionId = req.cookies.sessionId
+			if (!sessionId) {
+				res.status(401)
+				res.send({ message: 'Unauthorized' })
+				return
+			}
 
-		const { title, description } = GetTasksParamsSchema.parse(params)
+			// QUESTION: If the users sends a title and description, should we search for both?
+			// QUESTION: Should we do a fuzzy search?
+			const params = GetTasksParamsSchema.parse(req.query)
+			if (params?.title) {
+				const tasks = await repository.findByTitle(params.title, sessionId)
+				res.status(200).send({ data: tasks })
+				return
+			}
 
-		return { title, description }
-	} catch (error) {
-		return {}
-	}
+			if (params?.description) {
+				const tasks = await repository.findByDescription(
+					params.description,
+					sessionId
+				)
+				res.status(200).send({ data: tasks })
+				return
+			}
+
+			const tasks = await repository.findBySessionId(sessionId)
+
+			res.status(200).send({ data: tasks })
+		} catch (error) {
+			console.log('🚨 ERROR', error)
+			res.status(500).send({ message: 'Internal server error' })
+		}
+	})
 }

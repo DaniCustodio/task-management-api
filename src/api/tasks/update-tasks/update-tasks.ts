@@ -1,85 +1,93 @@
-import type { FastifyReply, FastifyRequest } from 'fastify'
-import { z } from 'zod'
-import { TaskRepository } from '../repository'
-import { db } from '../../../database/db'
+import type { FastifyInstance } from 'fastify'
+import { ZodError } from 'zod'
+import type { Task } from '../../../types'
+import type { TaskRepo } from '../repository'
+import {
+	type UpdateTask,
+	type UpdateTasksParams,
+	UpdateTasksParamsSchema,
+	UpdateTasksSchema,
+} from './schema'
 
-export async function updateTasks(req: FastifyRequest, res: FastifyReply) {
-	const taskRepository = new TaskRepository(db)
+interface Response<D> {
+	message?: string
+	data?: D
+}
 
-	const sessionId = req.cookies.sessionId
-	if (!sessionId) {
-		res.status(401)
-		res.send({ message: 'please provide a session id' })
-		return
-	}
+export async function updateTasksRoute(
+	app: FastifyInstance,
+	repository: TaskRepo
+) {
+	return app.put<{
+		Querystring: UpdateTasksParams
+		Body: UpdateTask
+		Reply: Response<Task>
+	}>('/:id', async (req, res) => {
+		try {
+			const sessionId = req.cookies.sessionId
+			if (!sessionId) {
+				res.status(401)
+				res.send({ message: 'please provide a session id' })
+				return
+			}
 
-	const { id } = validateParams(req.params)
-	if (!id) {
-		res.status(404)
-		res.send({ message: 'the task with the specified ID does not exist' })
-		return
-	}
+			const params = UpdateTasksParamsSchema.parse(req.params)
 
-	const { title, description } = validateBody(req.body)
-	if (!title && !description) {
-		res.status(400)
-		res.send({ message: 'please provide a valid title or description' })
-		return
-	}
+			const body = UpdateTasksSchema.parse(req.body)
+			const { title, description } = body
+			if (!title && !description) {
+				res.status(400)
+				res.send({ message: 'please provide a valid title or description' })
+				return
+			}
 
-	const updateFields: { title?: string; description?: string } = {}
-	if (title) {
-		updateFields.title = title
-	}
-	if (description) {
-		updateFields.description = description
-	}
+			const updateFields: { title?: string; description?: string } = {}
+			if (title && title.length > 0) {
+				updateFields.title = title
+			}
+			if (description && description.length > 0) {
+				updateFields.description = description
+			}
+			console.log('UPDATE FIELDS', updateFields)
+			const doesTheTaskExist = await repository.findTask(params.id, sessionId)
 
-	const doesTheTaskExist = await taskRepository.findTask(id, sessionId)
+			if (!doesTheTaskExist) {
+				res.status(404)
+				res.send({ message: 'the task with the specified ID does not exist' })
+				return
+			}
 
-	if (!doesTheTaskExist) {
-		res.status(404)
-		res.send({ message: 'the task with the specified ID does not exist' })
-		return
-	}
+			const updatedTask = await repository.updateTask({
+				id: params.id,
+				session_id: sessionId,
+				updateFields,
+			})
 
-	const updatedTask = await taskRepository.updateTask({
-		id,
-		session_id: sessionId,
-		updateFields,
+			if (!updatedTask) {
+				res.status(404)
+				res.send({ message: 'the task with the specified ID does not exist' })
+				return
+			}
+
+			res.status(200)
+			res.send({ data: updatedTask })
+		} catch (error) {
+			console.error('🚨 ERROR', error)
+			if (error instanceof ZodError) {
+				if (error.errors[0].code === 'too_small') {
+					res.status(400)
+					res.send({ message: 'please provide a valid title or description' })
+					return
+				}
+
+				res.status(404)
+				res.send({
+					message: 'the task with the specified ID does not exist',
+				})
+				return
+			}
+			res.status(500)
+			res.send({ message: 'an error occurred while updating the task' })
+		}
 	})
-
-	if (!updatedTask) {
-		res.status(404)
-		res.send({ message: 'the task with the specified ID does not exist' })
-		return
-	}
-
-	res.status(200)
-	res.send({ data: updatedTask })
-}
-
-function validateParams(params: unknown) {
-	try {
-		const UpdateTasksParamsSchema = z.object({
-			id: z.string().min(1),
-		})
-		const { id } = UpdateTasksParamsSchema.parse(params)
-		return { id }
-	} catch (error) {
-		return {}
-	}
-}
-
-function validateBody(body: unknown) {
-	try {
-		const UpdateTasksBodySchema = z.object({
-			title: z.string().min(1),
-			description: z.string().min(1),
-		})
-		const { title, description } = UpdateTasksBodySchema.parse(body)
-		return { title, description }
-	} catch (error) {
-		return {}
-	}
 }

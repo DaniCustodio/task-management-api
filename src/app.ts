@@ -1,6 +1,6 @@
 import cookie from '@fastify/cookie'
 import Fastify, { type FastifyInstance } from 'fastify'
-import { tasksRoute } from './api/tasks/route'
+import { tasksRoute } from './http/controllers/tasks/routes'
 
 export const app = createApp([{ route: tasksRoute, prefix: '/api/tasks' }])
 

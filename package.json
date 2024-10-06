@@ -30,6 +30,7 @@
 		"supertest": "^7.0.0",
 		"tsx": "^4.19.0",
 		"typescript": "^5.5.4",
+		"vite-tsconfig-paths": "^5.0.1",
 		"vitest": "^2.0.5"
 	},
 	"dependencies": {

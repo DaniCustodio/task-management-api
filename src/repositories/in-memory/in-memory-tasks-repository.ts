@@ -68,7 +68,8 @@ export class InMemoryTasksRepository implements TaskRepository {
 
 		const newTask: Task = {
 			...updatedTask,
-			...task,
+			title: task.title ?? updatedTask.title,
+			description: task.description ?? updatedTask.description,
 			updated_at: new Date(),
 		}
 

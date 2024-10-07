@@ -19,10 +19,11 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 	let sessionId = request.cookies.sessionId
 	if (!sessionId) {
 		sessionId = randomUUID()
+		const sevenDaysInSeconds = 60 * 60 * 24 * 7
 		reply.setCookie('sessionId', sessionId, {
 			path: '/',
 			httpOnly: true,
-			maxAge: 60 * 60 * 24 * 7,
+			maxAge: sevenDaysInSeconds,
 		})
 	}
 

@@ -1,6 +1,5 @@
-import { KyselyTasksRepository } from '@/repositories/kysely/kysely-tasks-repository'
-import { FetchUserTasksUseCase } from '@/use-cases/fetch-user-tasks'
-import { SearchTasksUseCase } from '@/use-cases/search-task'
+import { makeFetchUserTasksUseCase } from '@/use-cases/factories/make-fetch-user-tasks-use-case'
+import { makeSearchTaskUseCase } from '@/use-cases/factories/make-search-task-use-case'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
@@ -19,9 +18,7 @@ export async function search(request: FastifyRequest, reply: FastifyReply) {
 	const { sessionId } = searchCookiesSchema.parse(request.cookies)
 
 	if (!title && !description) {
-		const fetchUserTasksUseCase = new FetchUserTasksUseCase(
-			new KyselyTasksRepository()
-		)
+		const fetchUserTasksUseCase = makeFetchUserTasksUseCase()
 		const { tasks } = await fetchUserTasksUseCase.execute({
 			sessionId,
 		})
@@ -29,7 +26,7 @@ export async function search(request: FastifyRequest, reply: FastifyReply) {
 		reply.status(200).send({ data: tasks })
 	}
 
-	const searchUseCase = new SearchTasksUseCase(new KyselyTasksRepository())
+	const searchUseCase = makeSearchTaskUseCase()
 	const { tasks } = await searchUseCase.execute({
 		sessionId,
 		title,

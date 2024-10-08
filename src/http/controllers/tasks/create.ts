@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { KyselyTasksRepository } from '@/repositories/kysely/kysely-tasks-repository'
-import { CreateTaskUseCase } from '@/use-cases/create-task'
+import { makeCreateTaskUseCase } from '@/use-cases/factories/make-create-task-use-case'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
@@ -14,7 +13,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 
 	const { title, description } = createBodySchema.parse(request.body)
 
-	const createUseCase = new CreateTaskUseCase(new KyselyTasksRepository())
+	const createUseCase = makeCreateTaskUseCase()
 
 	let sessionId = request.cookies.sessionId
 	if (!sessionId) {

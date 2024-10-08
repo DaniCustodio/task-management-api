@@ -1,5 +1,4 @@
-import { KyselyTasksRepository } from '@/repositories/kysely/kysely-tasks-repository'
-import { UpdateTaskUseCase } from '@/use-cases/update-task'
+import { makeUpdateTaskUseCase } from '@/use-cases/factories/make-update-task-use-case'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
@@ -32,7 +31,7 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
 		return
 	}
 
-	const updateUseCase = new UpdateTaskUseCase(new KyselyTasksRepository())
+	const updateUseCase = makeUpdateTaskUseCase()
 
 	const { task } = await updateUseCase.execute({
 		sessionId,

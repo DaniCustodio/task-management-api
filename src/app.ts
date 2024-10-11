@@ -1,21 +1,26 @@
 import cookie from '@fastify/cookie'
-import Fastify, { type FastifyInstance } from 'fastify'
+import Fastify from 'fastify'
+import { ZodError } from 'zod'
+import { env } from './env'
 import { tasksRoute } from './http/controllers/tasks/routes'
 
-export const app = createApp([{ route: tasksRoute, prefix: '/api/tasks' }])
+export const app = Fastify({ logger: true })
+app.register(cookie)
 
-interface Route {
-	route: (app: FastifyInstance) => void
-	prefix: string
-}
+app.register(tasksRoute, { prefix: '/api/tasks' })
 
-export function createApp(routes: Route[]) {
-	const app = Fastify({ logger: true })
-	app.register(cookie)
-
-	for (const route of routes) {
-		app.register(route.route, { prefix: route.prefix })
+app.setErrorHandler((error, _, reply) => {
+	if (error instanceof ZodError) {
+		return reply
+			.status(400)
+			.send({ message: 'Validation error.', issues: error.format() })
 	}
 
-	return app
-}
+	if (env.NODE_ENV !== 'production') {
+		console.error(error)
+	} else {
+		// TODO: Here we should log to a external tool like DataDog/NewRelic/Sentry
+	}
+
+	return reply.status(500).send({ message: 'Internal server error.' })
+})

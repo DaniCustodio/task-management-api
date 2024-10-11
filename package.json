@@ -13,9 +13,11 @@
 		"test": "vitest",
 		"test:coverage": "vitest run --coverage",
 		"test:ci": "vitest run",
+		"test:e2e": "vitest run --dir ./src/http",
 		"migrate:latest": "kysely migrate:latest",
 		"migrate:rollback": "kysely migrate:rollback --all",
-		"seed:test": "kysely seed:run --specific=1727720540201_findBy"
+		"seed:test": "kysely seed:run --specific=1727720540201_findBy",
+		"db:delete": "rm -rf ./database/test.db"
 	},
 	"keywords": [],
 	"author": "Dani Custodio",
@@ -24,6 +26,7 @@
 		"@biomejs/biome": "1.9.2",
 		"@types/better-sqlite3": "^7.6.11",
 		"@types/node": "^22.5.2",
+		"@types/pg": "^8.11.10",
 		"@types/supertest": "^6.0.2",
 		"better-sqlite3": "^11.3.0",
 		"kysely-ctl": "^0.9.0",

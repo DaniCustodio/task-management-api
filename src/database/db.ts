@@ -1,15 +1,24 @@
-import SQLite from 'better-sqlite3'
-import { Kysely, SqliteDialect } from 'kysely'
+import { Kysely, PostgresDialect } from 'kysely'
+import pg from 'pg'
+const { Pool } = pg
 import { env } from '../env'
 import type { Database } from '../types.ts'
 
-const dbPath =
-	env.NODE_ENV === 'test' ? './database/test.db' : './database/tasks.db'
+export function createDbClient() {
+	console.log('🤡 CREATE DB CLIENT', env.DB_URL)
 
-const dialect = new SqliteDialect({
-	database: new SQLite(dbPath),
-})
+	const dialect = new PostgresDialect({
+		pool: new Pool({
+			connectionString: env.DB_URL,
+		}),
+	})
 
-export const db = new Kysely<Database>({
-	dialect,
-})
+	const db = new Kysely<Database>({
+		dialect,
+		log: ['query', 'error'],
+	})
+
+	return db
+}
+
+export const db = createDbClient()

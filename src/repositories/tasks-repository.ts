@@ -29,7 +29,7 @@ export interface TaskRepository {
 		description,
 		sessionId,
 	}: FindByDescription): Promise<Task[]>
-	findById({ id, sessionId }: FindById): Promise<Task | undefined>
+	findById({ id, sessionId }: FindById): Promise<Task | null>
 	findBySessionId(sessionId: string): Promise<Task[]>
 	update(task: UpdateTask): Promise<Task>
 }

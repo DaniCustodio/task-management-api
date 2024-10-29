@@ -4,13 +4,10 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
 	plugins: [tsConfigPaths()],
 	test: {
-		environment: './src/database/vitest-environment-kysely.ts',
+		environment: './prisma/vitest-environment-prisma.ts',
 		environmentMatchGlobs: [
-			[
-				'src/http/controllers/**',
-				'./src/database/vitest-environment-kysely.ts',
-			],
+			'src/http/controllers/**',
+			'./prisma/vitest-environment-prisma.ts',
 		],
-		dir: 'src',
 	},
 })

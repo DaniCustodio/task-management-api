@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import type { NewTask, Task } from '@/types'
 import type {
 	FindByDescription,
@@ -13,6 +14,7 @@ export class InMemoryTasksRepository implements TaskRepository {
 	async create(task: NewTask): Promise<Task> {
 		const newTask: Task = {
 			...task,
+			id: task.id || randomUUID(),
 			created_at: new Date(),
 			updated_at: new Date(),
 			completed_at: null,
@@ -41,12 +43,12 @@ export class InMemoryTasksRepository implements TaskRepository {
 		return Promise.resolve(tasks)
 	}
 
-	async findById({ id, sessionId }: FindById): Promise<Task | undefined> {
+	async findById({ id, sessionId }: FindById): Promise<Task | null> {
 		const task = this.tasks.find((task) => {
 			return task.id === id && task.session_id === sessionId
 		})
 
-		return Promise.resolve(task)
+		return task ? Promise.resolve(task) : Promise.resolve(null)
 	}
 
 	async findBySessionId(sessionId: string): Promise<Task[]> {

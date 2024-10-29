@@ -1,19 +1,4 @@
-import type { ColumnType, Insertable, Selectable, Updateable } from 'kysely'
+import type { Prisma, Task as PrismaTask } from '@prisma/client'
 
-export interface Database {
-	tasks: TaskTable
-}
-
-export interface TaskTable {
-	id: string
-	title: string
-	description: string
-	session_id: string
-	completed_at: string | null
-	created_at: ColumnType<Date, string | undefined, never>
-	updated_at: ColumnType<Date, string | undefined>
-}
-
-export type Task = Selectable<TaskTable>
-export type NewTask = Insertable<TaskTable>
-export type TaskUpdate = Updateable<TaskTable>
+export type Task = PrismaTask
+export type NewTask = Prisma.TaskCreateInput

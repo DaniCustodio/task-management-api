@@ -21,8 +21,7 @@ npm install
 3. Create a `.env` file in the root directory and add the following environment variables:
 
 ```bash
-DB_CLIENT=sqlite3
-DB_URL='./database.db'
+DATABASE_URL='postgresql://docker:docker@localhost:5432/taskapi'
 ```
 
 4. Run the development server:

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import type { NewTask, Task } from '@/types'
 import type {
+	DeleteTask,
 	FindByDescription,
 	FindById,
 	FindByTitle,
@@ -72,5 +73,21 @@ export class PrismaTasksRepository implements TaskRepository {
 		})
 
 		return updatedTask
+	}
+
+	async delete({ id, sessionId }: DeleteTask): Promise<Task | null> {
+		try {
+			const deletedTask = await prisma.task.delete({
+				where: {
+					id,
+					session_id: sessionId,
+				},
+			})
+
+			return deletedTask
+		} catch (error) {
+			console.log('❌ Error deleting task:', error)
+			return null
+		}
 	}
 }

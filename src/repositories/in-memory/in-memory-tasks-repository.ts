@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { NewTask, Task } from '@/types'
 import type {
+	DeleteTask,
 	FindByDescription,
 	FindById,
 	FindByTitle,
@@ -83,5 +84,17 @@ export class InMemoryTasksRepository implements TaskRepository {
 		})
 
 		return Promise.resolve(newTask)
+	}
+
+	async delete({ id, sessionId }: DeleteTask): Promise<Task | null> {
+		const task = this.tasks.find((item) => {
+			return item.id === id && item.session_id === sessionId
+		})
+
+		if (!task) {
+			return null
+		}
+
+		return Promise.resolve(task)
 	}
 }

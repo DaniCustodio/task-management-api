@@ -15,6 +15,11 @@ export interface FindById {
 	sessionId: string
 }
 
+export interface DeleteTask {
+	id: string
+	sessionId: string
+}
+
 export interface UpdateTask {
 	id: string
 	session_id: string
@@ -32,4 +37,5 @@ export interface TaskRepository {
 	findById({ id, sessionId }: FindById): Promise<Task | null>
 	findBySessionId(sessionId: string): Promise<Task[]>
 	update(task: UpdateTask): Promise<Task>
+	delete({ id, sessionId }: DeleteTask): Promise<Task | null>
 }

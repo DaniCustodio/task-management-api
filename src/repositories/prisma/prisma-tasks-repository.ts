@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import type { NewTask, Task } from '@/types'
 import type {
+	CompleteTask,
 	DeleteTask,
 	FindByDescription,
 	FindById,
@@ -89,5 +90,32 @@ export class PrismaTasksRepository implements TaskRepository {
 			console.log('❌ Error deleting task:', error)
 			return null
 		}
+	}
+
+	async toggleComplete({ id, sessionId }: CompleteTask): Promise<Task | null> {
+		const task = await prisma.task.findUnique({
+			where: {
+				id,
+				session_id: sessionId,
+			},
+		})
+
+		if (!task) {
+			return null
+		}
+
+		const completedAt = task.completed_at ? null : new Date().toISOString()
+
+		const updatedTask = await prisma.task.update({
+			where: {
+				id: id,
+				session_id: sessionId,
+			},
+			data: {
+				completed_at: completedAt,
+			},
+		})
+
+		return updatedTask
 	}
 }

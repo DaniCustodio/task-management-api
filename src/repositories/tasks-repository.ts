@@ -20,6 +20,11 @@ export interface DeleteTask {
 	sessionId: string
 }
 
+export interface CompleteTask {
+	id: string
+	sessionId: string
+}
+
 export interface UpdateTask {
 	id: string
 	session_id: string
@@ -38,4 +43,5 @@ export interface TaskRepository {
 	findBySessionId(sessionId: string): Promise<Task[]>
 	update(task: UpdateTask): Promise<Task>
 	delete({ id, sessionId }: DeleteTask): Promise<Task | null>
+	toggleComplete({ id, sessionId }: CompleteTask): Promise<Task | null>
 }

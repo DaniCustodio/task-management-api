@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { NewTask, Task } from '@/types'
 import type {
+	CompleteTask,
 	DeleteTask,
 	FindByDescription,
 	FindById,
@@ -18,7 +19,10 @@ export class InMemoryTasksRepository implements TaskRepository {
 			id: task.id || randomUUID(),
 			created_at: new Date(),
 			updated_at: new Date(),
-			completed_at: null,
+			completed_at:
+				typeof task.completed_at === 'string'
+					? new Date(task.completed_at)
+					: null,
 		}
 
 		this.tasks.push(newTask)
@@ -96,5 +100,24 @@ export class InMemoryTasksRepository implements TaskRepository {
 		}
 
 		return Promise.resolve(task)
+	}
+
+	async toggleComplete({ id, sessionId }: CompleteTask): Promise<Task | null> {
+		const task = this.tasks.find((item) => {
+			return item.id === id && item.session_id === sessionId
+		})
+
+		if (!task) {
+			return null
+		}
+
+		const completedAt = task.completed_at ? null : new Date()
+
+		const updatedTask = {
+			...task,
+			completed_at: completedAt,
+		}
+
+		return Promise.resolve(updatedTask)
 	}
 }

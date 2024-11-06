@@ -1,13 +1,18 @@
 import { verifySessionId } from '@/http/middlewares/verify-session-id'
 import type { FastifyInstance } from 'fastify'
+import multer from 'fastify-multer'
+import { toggleComplete } from './complete'
 import { create } from './create'
+import { createMulti } from './create-multi'
 import { deleteTask } from './delete'
 import { search } from './search'
 import { update } from './update'
-import { toggleComplete } from './complete'
+
+const upload = multer({ dest: 'uploads/' })
 
 export async function tasksRoute(app: FastifyInstance) {
 	app.post('/', create)
+	app.post('/multi', { preHandler: upload.single('file') }, createMulti)
 
 	//** Authenticated Routes **//
 	app.put('/:id', { onRequest: [verifySessionId] }, update)

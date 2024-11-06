@@ -19,7 +19,7 @@ describe('Create Multiple Tasks Use Case', () => {
 	})
 
 	it('should create multiple tasks', async () => {
-		const { tasks } = await sut.execute({ data: { list, sessionId: '123' } })
+		const { tasks } = await sut.execute({ listOfTasks: list, sessionId: '123' })
 
 		expect(tasks.length).toEqual(3)
 	})

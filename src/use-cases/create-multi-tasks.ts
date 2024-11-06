@@ -3,13 +3,11 @@ import type { TaskRepository } from '@/repositories/tasks-repository'
 import type { Task } from '@/types'
 
 interface CreateMultipleTasksUseCaseRequest {
-	data: {
-		list: {
-			title: string
-			description: string
-		}[]
-		sessionId: string
-	}
+	listOfTasks: {
+		title: string
+		description: string
+	}[]
+	sessionId: string
 }
 
 interface CreateMultipleTasksUseCaseResponse {
@@ -20,12 +18,13 @@ export class CreateMultipleTasksUseCase {
 	constructor(private readonly taskRepository: TaskRepository) {}
 
 	async execute({
-		data,
+		listOfTasks,
+		sessionId,
 	}: CreateMultipleTasksUseCaseRequest): Promise<CreateMultipleTasksUseCaseResponse> {
-		const tasksWithId = data.list.map((task) => ({
+		const tasksWithId = listOfTasks.map((task) => ({
 			...task,
 			id: randomUUID(),
-			session_id: data.sessionId,
+			session_id: sessionId,
 		}))
 
 		const tasks = await this.taskRepository.createMany(tasksWithId)

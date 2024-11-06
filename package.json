@@ -10,7 +10,7 @@
 	"scripts": {
 		"dev": "NODE_ENV=development tsx watch src/server.ts",
 		"check": "biome check --write ./src",
-		"test": "vitest run --dir ./src/use-cases",
+		"test": "vitest run ./src/use-cases ./src/services",
 		"test:coverage": "vitest run --coverage",
 		"test:ci": "vitest run",
 		"test:e2e": "vitest run --dir ./src/http"
@@ -32,8 +32,10 @@
 	"dependencies": {
 		"@fastify/cookie": "^9.4.0",
 		"@prisma/client": "^5.21.1",
+		"csv-parse": "^5.5.6",
 		"dotenv": "^16.4.5",
 		"fastify": "^4.28.1",
+		"fastify-multer": "^2.0.3",
 		"zod": "^3.23.8"
 	}
 }

@@ -34,6 +34,7 @@ export interface UpdateTask {
 
 export interface TaskRepository {
 	create(task: NewTask): Promise<Task>
+	createMany(tasks: NewTask[]): Promise<Task[]>
 	findByTitle({ title, sessionId }: FindByTitle): Promise<Task[]>
 	findByDescription({
 		description,

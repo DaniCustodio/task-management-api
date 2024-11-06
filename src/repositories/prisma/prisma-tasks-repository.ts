@@ -19,6 +19,14 @@ export class PrismaTasksRepository implements TaskRepository {
 		return createdTask
 	}
 
+	async createMany(tasks: NewTask[]): Promise<Task[]> {
+		const createdTasks = await prisma.task.createManyAndReturn({
+			data: tasks,
+		})
+
+		return createdTasks
+	}
+
 	async findByTitle({ title, sessionId }: FindByTitle): Promise<Task[]> {
 		const task = await prisma.task.findMany({
 			where: {
@@ -87,7 +95,7 @@ export class PrismaTasksRepository implements TaskRepository {
 
 			return deletedTask
 		} catch (error) {
-			console.log('❌ Error deleting task:', error)
+			console.error('❌ Error deleting task:', error)
 			return null
 		}
 	}

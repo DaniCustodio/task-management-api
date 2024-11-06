@@ -1,11 +1,13 @@
 import cookie from '@fastify/cookie'
 import Fastify from 'fastify'
+import multer from 'fastify-multer'
 import { ZodError } from 'zod'
 import { env } from './env'
 import { tasksRoute } from './http/controllers/tasks/routes'
 
 export const app = Fastify({ logger: true })
 app.register(cookie)
+app.register(multer.contentParser)
 
 app.register(tasksRoute, { prefix: '/api/tasks' })
 

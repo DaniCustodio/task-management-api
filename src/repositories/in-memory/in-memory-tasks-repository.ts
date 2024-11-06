@@ -29,6 +29,14 @@ export class InMemoryTasksRepository implements TaskRepository {
 		return Promise.resolve(newTask)
 	}
 
+	async createMany(tasks: NewTask[]): Promise<Task[]> {
+		const newTasks = tasks.map((task) => {
+			return this.create(task)
+		})
+
+		return Promise.all(newTasks)
+	}
+
 	async findByTitle({ title, sessionId }: FindByTitle): Promise<Task[]> {
 		const tasks = this.tasks.filter((task) => {
 			return task.title === title && task.session_id === sessionId

@@ -95,7 +95,7 @@ export class PrismaTasksRepository implements TaskRepository {
 
 			return deletedTask
 		} catch (error) {
-			console.log('❌ Error deleting task:', error)
+			console.error('❌ Error deleting task:', error)
 			return null
 		}
 	}

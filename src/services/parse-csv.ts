@@ -29,7 +29,7 @@ export async function parseCsv(filePath: string): Promise<NewTask[]> {
 
 		return tasks
 	} catch (error) {
-		console.log('❌ Error parsing CSV file:', error)
+		console.error('❌ Error parsing CSV file:', error)
 		throw new Error('Invalid CSV file')
 	}
 }
